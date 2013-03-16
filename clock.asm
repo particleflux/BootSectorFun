@@ -18,12 +18,12 @@ jmp 0x0:boot
 boot:
 	xor bx, bx		; bx needs to be 0 for int 0x10
 	mov ds, bx
-	mov ax, 0xb800
-	mov es, ax
 	mov ax, 0x8000
 	mov ss, ax
-	mov sp, 0xffff
-	cld
+	xor sp, sp
+	push 0xb800
+	pop es
+	;cld
 
 update:
 	mov ah, BYTE [col]
@@ -197,21 +197,19 @@ paint_digit:
 	pusha
 	; fetch digit pattern
 	movzx dx, [pattern+bx]
-
+	
+	xor ax, ax
 	bt dx, 6
 	jnc b5
 	;paint bit 6 here
-	xor ax, ax
 	call bar_horiz
 b5:
 	bt dx, 5
 	jnc b4
-	xor ax, ax
 	call bar_vert
 b4:
 	bt dx, 4
 	jnc b3
-	xor ax, ax
 	push di
 	add di, 24		;12*2
 	call bar_vert
@@ -219,17 +217,17 @@ b4:
 b3:
 	bt dx, 3
 	jnc b2
-	mov ax, 8
+	mov al, 8
 	call bar_horiz
 b2:
 	bt dx, 2
 	jnc b1
-	mov ax, 8
+	mov al, 8
 	call bar_vert
 b1:
 	bt dx, 1
 	jnc b0
-	mov ax, 8
+	mov al, 8
 	push di
 	add di, 24		;12*2
 	call bar_vert
